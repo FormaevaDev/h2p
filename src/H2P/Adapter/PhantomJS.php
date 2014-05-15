@@ -189,4 +189,24 @@ class PhantomJS extends AdapterAbstract
 
         return true;
     }
+    
+    /**
+     * Run the URI to destination with the specified options
+     *
+     * @param string $uri
+     * @return bool
+     * @throws \H2P\Exception
+     */
+    public function run($uri, $destination)
+    {
+    	$bin = $this->getBinPath();
+    
+    	$result = json_decode(trim(shell_exec($bin . ' ' . escapeshellarg($uri) .' '.escapeshellarg($destination))));
+    
+    	if (!$result->success) {
+    		throw new Exception('Error while executing PhantomJS: ' . $result->response);
+    	}
+    
+    	return true;
+    }
 }
