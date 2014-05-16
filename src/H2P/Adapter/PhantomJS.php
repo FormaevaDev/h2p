@@ -148,6 +148,15 @@ class PhantomJS extends AdapterAbstract
     }
 
     /**
+     * Returns H2P Converter Script Path
+     *
+     * @return string
+     */
+    protected function getCookiePath()
+    {
+    	return $this->binPath . '/../cookies/';
+    }
+    /**
      * Get the binary script to execute
      *
      * @return mixed
@@ -175,13 +184,14 @@ class PhantomJS extends AdapterAbstract
     public function convert($uri, $destination, $format, $orientation, $border)
     {
         $bin = $this->getBinPath();
+        $cookie = $this->getCookiePath();
         $args[] = escapeshellarg($uri);
         $args[] = escapeshellarg($destination);
         $args[] = escapeshellarg($format);
         $args[] = escapeshellarg($orientation);
         $args[] = escapeshellarg($border);
-
-        $result = json_decode(trim(shell_exec($bin . ' ' . implode(' ', $args))));
+        
+        $result = json_decode(trim(shell_exec($bin . ' --cookies-file='.$cookie.'cookies.txt ' . implode(' ', $args))));
 
         if (!$result->success) {
             throw new Exception('Error while executing PhantomJS: ' . $result->response);
