@@ -51,6 +51,12 @@ class PhantomJS extends AdapterAbstract
      * @var array
      */
     protected $searchPaths = array();
+    
+    /**
+     * Name of cookies
+     * @var null
+     */
+    protected $cookiesFile;
 
     /**
      * Constructor
@@ -108,6 +114,16 @@ class PhantomJS extends AdapterAbstract
     {
         return $this->detectSearchPaths($searchPath);
     }
+    
+    /**
+     * 
+     * @param string $cookiesFile
+     * @return string
+     */
+    public function setCookiesFile($cookiesFile)
+    {
+    	 return $this->cookiesFile = $cookiesFile;
+    }
 
     /**
      * Return the search paths for PhantomJS
@@ -118,7 +134,7 @@ class PhantomJS extends AdapterAbstract
     {
         return $this->searchPaths;
     }
-
+    
     /**
      * Returns the PhantomJS binary path based on defined Search Paths
      * 
@@ -153,8 +169,11 @@ class PhantomJS extends AdapterAbstract
      * @return string
      */
     protected function getCookiePath()
-    {
-    	return $this->binPath . '/../cookies/';
+    {	
+    	//Générer un nom de ficher aléatoire
+    	$name = md5(uniqid(rand(), true));
+    	$this->setCookiesFile($name);
+    	return $this->binPath . '/cookies/'.$name.'.txt';
     }
     /**
      * Get the binary script to execute
@@ -163,11 +182,23 @@ class PhantomJS extends AdapterAbstract
      * @throws \H2P\Exception
      */
     protected function getBinPath()
-    {
+    {	
+    	
         $phantomjs = $this->getPhantomPath();
+        $cookie = $this->getCookiePath();
         $converter = $this->getConverterPath();
-
-        return escapeshellarg($phantomjs) . ' ' . escapeshellarg($converter);
+                
+        return escapeshellarg($phantomjs) . ' ' . escapeshellarg('--cookies-file='. $cookie) . ' ' . escapeshellarg($converter);
+        
+    }
+    
+    /**
+     * Get the name of the file cookies
+     * @return string
+     */
+    public function getCookiesFile()
+    {
+    	return $this->cookiesFile;
     }
 
     /**
@@ -184,15 +215,15 @@ class PhantomJS extends AdapterAbstract
     public function convert($uri, $destination, $format, $orientation, $border)
     {
         $bin = $this->getBinPath();
-        $cookie = $this->getCookiePath();
         $args[] = escapeshellarg($uri);
         $args[] = escapeshellarg($destination);
         $args[] = escapeshellarg($format);
         $args[] = escapeshellarg($orientation);
         $args[] = escapeshellarg($border);
         
-        $result = json_decode(trim(shell_exec($bin . ' --cookies-file='.$cookie.'cookies.txt ' . implode(' ', $args))));
-
+        $result = json_decode(trim(shell_exec($bin . '  ' . implode(' ', $args))));
+        //Supression de ficher cookie crée pour la connexion PhantomJS
+        shell_exec('rm '.$this->binPath.'/cookies/'.$this->getCookiesFile().'.txt');
         if (!$result->success) {
             throw new Exception('Error while executing PhantomJS: ' . $result->response);
         }
