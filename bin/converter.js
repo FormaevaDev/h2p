@@ -59,6 +59,12 @@ function waitFor(testFx, onReady, timeOutMillis) {
 var page = require('webpage').create();
 var args = require('system').args;
 
+function numCallback(pageNum, numPages) {
+    return "<div style='text-align:right;'><small>" + pageNum + " / " + numPages + "</small></div>";
+}
+
+
+
 function errorHandler(e) {
     console.log(JSON.stringify({
         success: false,
@@ -95,16 +101,29 @@ try {
                     });
                 }, function() {
 
-                	page.paperSize = { format: format, orientation: orientation, border: border };
-                	page.render(destination, { format: 'pdf' });
-                	
-                	console.log(JSON.stringify({
-                		success: true,
-                		response: null
-                	}));
-                	
-                	// Stop the script
-                	phantom.exit(0);
+                	page.paperSize = {
+            			format: format, 
+            			orientation: orientation, 
+            			border: border,
+            			margin: {left:"1cm", right:"1cm", top:"1cm", bottom:"0.5cm"},
+            			footer: {
+            		           height: "0.5cm",
+            		           contents: phantom.callback(function(pageNum, numPages) {
+            		                return "<div> <span style='text-align:center;font-family:arial;font-size:12px;'>© Formaeva</span><span style='float:right;font-family:arial;font-size:12px'>" + pageNum + " / " + numPages + "</span></div>";
+            		            })
+            			}
+                	};
+            	    
+        		   page.render(destination, { format: 'pdf' });
+        		   
+        		   console.log(JSON.stringify({
+        			   success: true,
+        			   response: null
+        		   }));
+        		   
+        		   // Stop the script
+        		   phantom.exit(0);
+        		   
                 });
             } 
 
