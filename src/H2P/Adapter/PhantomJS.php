@@ -164,6 +164,16 @@ class PhantomJS extends AdapterAbstract
     }
 
     /**
+     * Returns H2P Luncher Script Path
+     *
+     * @return string
+     */
+    protected function getLuncherPath()
+    {
+        return "/bin/bash $this->binPath/phantomjs-luncher.sh";
+    }
+
+    /**
      * Returns H2P Converter Script Path
      *
      * @return string
@@ -188,7 +198,7 @@ class PhantomJS extends AdapterAbstract
         $cookie = $this->getCookiePath();
         $converter = $this->getConverterPath();
                 
-        return escapeshellarg($phantomjs) . ' ' . escapeshellarg('--cookies-file='. $cookie) . ' ' . escapeshellarg($converter);
+        return escapeshellarg($phantomjs) . ' ' . escapeshellarg('--cookies-file='. $cookie .' --debug=true') . ' ' . escapeshellarg($converter);
         
     }
     
@@ -215,28 +225,31 @@ class PhantomJS extends AdapterAbstract
     public function convert($uri, $destination, $format, $orientation, $border)
     {
         $bin = $this->getBinPath();
+        $luncher = $this->getLuncherPath();
         $args[] = escapeshellarg($uri);
         $args[] = escapeshellarg($destination);
         $args[] = escapeshellarg($format);
         $args[] = escapeshellarg($orientation);
         $args[] = escapeshellarg($border);
-        
-        $result = json_decode(trim(shell_exec($bin . '  ' . implode(' ', $args))));
+
+        $result = json_decode(trim(shell_exec("$luncher $bin '". implode(' ', $args)."'")));
         //Supression de ficher cookie crée pour la connexion PhantomJS
         shell_exec('rm '.$this->binPath.'/cookies/'.$this->getCookiesFile().'.txt');
+        //var_dump($result); exit;
         if (!$result->success) {
             throw new Exception('Error while executing PhantomJS: ' . $result->response);
         }
 
         return true;
     }
-    
+
     /**
      * Run the URI to destination with the specified options
      *
      * @param string $uri
+     * @param $destination
+     * @throws Exception
      * @return bool
-     * @throws \H2P\Exception
      */
     public function run($uri, $destination)
     {
