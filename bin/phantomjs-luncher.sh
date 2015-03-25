@@ -25,6 +25,11 @@ getPhantomJsStatus(){
 # attention cette fonction est récursive
 # aucun arguments en entrée
 main () {
+
+	if [ $1 -gt 5 ]; then
+		exit 0
+	fi
+
 	random=$(date +%s)
 	LOGFILE="/tmp/$random.log"
 	runPhantomJS ${LOGFILE} &
@@ -37,11 +42,14 @@ main () {
 		returned=`echo $?`
 		# limiter la récursivité à 5 fois
 		if [ "$returned" = 0 ]; then
-		    main
+			let "count = $1 + 1"
+		    main ${count}
         fi
 	fi
 	wait ${pid}
+
 }
 
 # appel de la foncton main
-main
+
+main 0
