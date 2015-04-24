@@ -97,7 +97,7 @@ try {
             } else {
                 waitFor(function() {
                     return page.evaluate(function() {
-                        return !$("#footer").is(":visible");
+                        return !$("#footer").is(":visible") && $("#logo_pdf").is(":visible");
                     });
                 }, function() {
 
