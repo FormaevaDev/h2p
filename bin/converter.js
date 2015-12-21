@@ -90,6 +90,31 @@ try {
         'User-Agent': 'PhantomJS'
     };
 
+    var today = new Date();
+    var dd = today.getDate();
+    var mm = today.getMonth()+1; //January is 0!
+    var yyyy = today.getFullYear();
+    var hh = today.getHours();
+    var ss = today.getMinutes();
+    var sec = today.getSeconds();
+
+    if(dd<10) {
+        dd='0'+dd;
+    }
+
+    if(mm<10) {
+        mm='0'+mm;
+    }
+
+    if(ss<10) {
+        ss='0'+ss;
+    }
+
+    if(sec<10) {
+        sec='0'+sec;
+    }
+    today = dd+'/'+mm+'/'+ yyyy + " " + hh + 'h' + ss + ":" + sec;
+
     page.open(uri, function (status) {
         try {
             if (status !== 'success') {
@@ -109,7 +134,7 @@ try {
             			footer: {
             		           height: "0.5cm",
             		           contents: phantom.callback(function(pageNum, numPages) {
-            		                return "<div> <span style='text-align:center;font-family:arial;font-size:12px;'>© Formaeva</span><span style='float:right;font-family:arial;font-size:12px'>" + pageNum + " / " + numPages + "</span></div>";
+            		                return "<div> <span style='text-align:center;font-family:arial;font-size:12px;'>© Formaeva  </span><span style='text-align:center;font-family:arial;font-size:8px;'>" + today + "</span><span style='float:right;font-family:arial;font-size:12px'>" + pageNum + " / " + numPages + "</span></div>";
             		            })
             			}
                 	};
