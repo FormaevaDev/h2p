@@ -198,7 +198,7 @@ class PhantomJS extends AdapterAbstract
         $cookie = $this->getCookiePath();
         $converter = $this->getConverterPath();
                 
-        return escapeshellarg($phantomjs) . ' ' . escapeshellarg('--cookies-file='. $cookie .' --debug=true') . ' ' . escapeshellarg($converter);
+        return escapeshellarg($phantomjs) . ' ' . escapeshellarg('--cookies-file='. $cookie .' --debug=true --ignore-ssl-errors=true') . ' ' . escapeshellarg($converter);
         
     }
     

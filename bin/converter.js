@@ -35,12 +35,12 @@ function waitFor(testFx, onReady, timeOutMillis) {
     var maxtimeOutMillis = timeOutMillis ? timeOutMillis : 300000, //< Default Max Timout is 3s
         start = new Date().getTime(),
         condition = false,
-        interval = setInterval(function() {
-            if ( (new Date().getTime() - start < maxtimeOutMillis) && !condition ) {
+        interval = setInterval(function () {
+            if ((new Date().getTime() - start < maxtimeOutMillis) && !condition) {
                 // If not time-out yet and condition not yet fulfilled
                 condition = (typeof(testFx) === "string" ? eval(testFx) : testFx()); //< defensive code
             } else {
-                if(!condition) {
+                if (!condition) {
                     // If condition still not fulfilled (timeout but condition is 'false')
                     console.log(JSON.stringify({
                         success: false,
@@ -63,7 +63,6 @@ var args = require('system').args;
 function numCallback(pageNum, numPages) {
     return "<div style='text-align:right;'><small>" + pageNum + " / " + numPages + "</small></div>";
 }
-
 
 
 function errorHandler(e) {
@@ -93,66 +92,76 @@ try {
 
     var today = new Date();
     var dd = today.getDate();
-    var mm = today.getMonth()+1; //January is 0!
+    var mm = today.getMonth() + 1; //January is 0!
     var yyyy = today.getFullYear();
     var hh = today.getHours();
     var ss = today.getMinutes();
     var sec = today.getSeconds();
 
-    if(dd<10) {
-        dd='0'+dd;
+    if (dd < 10) {
+        dd = '0' + dd;
     }
 
-    if(mm<10) {
-        mm='0'+mm;
+    if (mm < 10) {
+        mm = '0' + mm;
     }
 
-    if(ss<10) {
-        ss='0'+ss;
+    if (ss < 10) {
+        ss = '0' + ss;
     }
 
-    if(sec<10) {
-        sec='0'+sec;
+    if (sec < 10) {
+        sec = '0' + sec;
     }
-    today = dd+'/'+mm+'/'+ yyyy + " " + hh + 'h' + ss + ":" + sec;
+    today = dd + '/' + mm + '/' + yyyy + " " + hh + 'h' + ss + ":" + sec;
 
     page.open(uri, function (status) {
         try {
             if (status !== 'success') {
                 throw 'Unable to access the URI!';
             } else {
-                waitFor(function() {
-                    return page.evaluate(function() {
+                waitFor(function () {
+                    return page.evaluate(function () {
                         return !$("#footer").is(":visible");//&& $("#logo_pdf").is(":visible")
                     });
-                }, function() {
+                }, function () {
+                    // Code commenté jusqu'au résolution de bug pour le format A4
+                    /*page.paperSize = {
+                     format: format,
+                     orientation: orientation,
+                     border: border,
+                     margin: {left:"1cm", right:"1cm", top:"1cm", bottom:"0.5cm"},
+                     footer: {
+                     height: "0.5cm",
+                     contents: phantom.callback(function(pageNum, numPages) {
+                     return "<div> <span style='text-align:center;font-family:arial;font-size:12px;'>© Formaeva  </span><span style='text-align:center;font-family:arial;font-size:8px;'>" + today + "</span><span style='float:right;font-family:arial;font-size:12px'>" + pageNum + " / " + numPages + "</span></div>";
+                     })
+                     }
+                     };*/
+                    page.paperSize = {
+                        border: border,
+                        margin: {left: "1cm", right: "1cm", top: "1cm", bottom: "0.5cm"},
+                        width: '1024px',
+                        height: '1280px',
+                        footer: {
+                            height: "0.5cm",
+                            contents: phantom.callback(function (pageNum, numPages) {
+                                return "<div> <span style='text-align:center;font-family:arial;font-size:12px;'>© Formaeva  </span><span style='text-align:center;font-family:arial;font-size:8px;'>" + today + "</span><span style='float:right;font-family:arial;font-size:12px'>" + pageNum + " / " + numPages + "</span></div>";
+                            })
+                        }
+                    };
+                    page.render(destination, {format: 'pdf'});
 
-                	page.paperSize = {
-            			format: format, 
-            			orientation: orientation, 
-            			border: border,
-            			margin: {left:"1cm", right:"1cm", top:"1cm", bottom:"0.5cm"},
-            			footer: {
-            		           height: "0.5cm",
-            		           contents: phantom.callback(function(pageNum, numPages) {
-            		                return "<div> <span style='text-align:center;font-family:arial;font-size:12px;'>© Formaeva  </span><span style='text-align:center;font-family:arial;font-size:8px;'>" + today + "</span><span style='float:right;font-family:arial;font-size:12px'>" + pageNum + " / " + numPages + "</span></div>";
-            		            })
-            			}
-                	};
+                    console.log(JSON.stringify({
+                        success: true,
+                        response: null
+                    }));
 
-                    page.zoomFactor = 0;
-                    page.render(destination, { format: 'pdf' });
-        		   
-        		   console.log(JSON.stringify({
-        			   success: true,
-        			   response: null
-        		   }));
-        		   
-        		   // Stop the script
-        		   phantom.exit(0);
-        		   
+                    // Stop the script
+                    phantom.exit(0);
+
                 }, 300000);
-            } 
+            }
 
         } catch (e) {
             errorHandler(e);
