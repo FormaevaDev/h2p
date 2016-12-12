@@ -122,7 +122,7 @@ try {
             } else {
                 waitFor(function () {
                     return page.evaluate(function () {
-                        return !$("#footer").is(":visible");//&& $("#logo_pdf").is(":visible")
+                        return !$("#footer").is(":visible") && $("#logo_pdf").is(":visible");
                     });
                 }, function () {
                     // Code commenté jusqu'au résolution de bug pour le format A4
