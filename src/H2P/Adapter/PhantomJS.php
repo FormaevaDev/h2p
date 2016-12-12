@@ -90,7 +90,7 @@ class PhantomJS extends AdapterAbstract
                 break;
             case 'Darwin':
                 $paths[] = '/usr/local/bin/phantomjs'; // I don't know if is the right path for Mac
-                $paths[] = $this->binPath . '/mac/phantomjs';
+                $paths[] = $this->binPath . '/macosx/phantomjs';
                 break;
             case 'Linux':
             default:
