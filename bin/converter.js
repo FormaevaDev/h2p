@@ -49,7 +49,6 @@ function waitFor(testFx, onReady, timeOutMillis) {
                     phantom.exit(1);
                 } else {
                     // Condition fulfilled (timeout and/or condition is 'true')
-                    console.log("'waitFor()' finished in " + (new Date().getTime() - start) + "ms.");
                     typeof(onReady) === "string" ? eval(onReady) : onReady(); //< Do what it's supposed to do once the condition is fulfilled
                     clearInterval(interval); //< Stop this interval
                 }
@@ -60,11 +59,6 @@ function waitFor(testFx, onReady, timeOutMillis) {
 var page = require('webpage').create();
 var args = require('system').args;
 
-function numCallback(pageNum, numPages) {
-    return "<div style='text-align:right;'><small>" + pageNum + " / " + numPages + "</small></div>";
-}
-
-
 function errorHandler(e) {
     console.log(JSON.stringify({
         success: false,
@@ -74,6 +68,18 @@ function errorHandler(e) {
     // Stop the script
     phantom.exit(0);
 }
+
+page.onError = function(msg, trace) {
+    var msgStack = ['ERROR: ' + msg];
+    if (trace && trace.length) {
+        msgStack.push('TRACE:');
+        trace.forEach(function(t) {
+            msgStack.push(' -> ' + t.file + ': ' + t.line + (t.function ? ' (in function "' + t.function + '")' : ''));
+        });
+    }
+    // uncomment to log into the console
+    //console.error(msgStack.join('\n'));
+};
 
 try {
     if (args.length < 3) {
@@ -127,16 +133,16 @@ try {
                 }, function () {
                     // Code commenté jusqu'au résolution de bug pour le format A4
                     /*page.paperSize = {
-                     format: format,
-                     orientation: orientation,
-                     border: border,
-                     margin: {left:"1cm", right:"1cm", top:"1cm", bottom:"0.5cm"},
-                     footer: {
-                     height: "0.5cm",
-                     contents: phantom.callback(function(pageNum, numPages) {
-                     return "<div> <span style='text-align:center;font-family:arial;font-size:12px;'>© Formaeva  </span><span style='text-align:center;font-family:arial;font-size:8px;'>" + today + "</span><span style='float:right;font-family:arial;font-size:12px'>" + pageNum + " / " + numPages + "</span></div>";
-                     })
-                     }
+                         format: format,
+                         orientation: orientation,
+                         border: border,
+                         margin: {left:"1cm", right:"1cm", top:"1cm", bottom:"0.5cm"},
+                         footer: {
+                             height: "0.5cm",
+                             contents: phantom.callback(function(pageNum, numPages) {
+                             return "<div> <span style='text-align:center;font-family:arial;font-size:12px;'>© Formaeva  </span><span style='text-align:center;font-family:arial;font-size:8px;'>" + today + "</span><span style='float:right;font-family:arial;font-size:12px'>" + pageNum + " / " + numPages + "</span></div>";
+                         })
+                         }
                      };*/
                     page.paperSize = {
                         border: border,
