@@ -225,14 +225,16 @@ class PhantomJS extends AdapterAbstract
     public function convert($uri, $destination, $format, $orientation, $border)
     {
         $bin = $this->getBinPath();
-        $luncher = $this->getLuncherPath();
+        //$luncher = $this->getLuncherPath();
         $args[] = escapeshellarg($uri);
         $args[] = escapeshellarg($destination);
         $args[] = escapeshellarg($format);
         $args[] = escapeshellarg($orientation);
         $args[] = escapeshellarg($border);
 
-        $result = json_decode(trim(shell_exec("$luncher $bin '". implode(' ', $args)."'")));
+        //$result = json_decode(trim(shell_exec("$luncher $bin '". implode(' ', $args)."'")));
+
+        $result = json_decode(trim(shell_exec("$bin ". implode(' ', $args))));
         //Supression de ficher cookie crée pour la connexion PhantomJS
         shell_exec('rm '.$this->binPath.'/cookies/'.$this->getCookiesFile().'.txt');
         //var_dump($result); exit;
