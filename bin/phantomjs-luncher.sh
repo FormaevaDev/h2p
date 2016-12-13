@@ -17,7 +17,7 @@ getPhantomJsStatus(){
 	# TODO voir une autre solution pour eviter le waiter
 	sleep 8
 	#TODO récupérer que la sortie standar
-	res=`cat $1|grep -a "updateLoadingProgress: 90"|head -n 1|rev|cut -d ' ' -f 2|rev`
+	res=`cat $1|grep -a "updateLoadingProgress: 90"|head -n 1|rev|cut -d ' ' -f 1|rev`
 	echo "$res"
 }
 
